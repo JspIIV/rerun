@@ -1,0 +1,34 @@
+{
+  "network": "genlayer testnet bradbury phase 2",
+  "chain_id": 4221,
+  "compiler": "0.8.36+commit.8a079791.Emscripten.clang",
+  "bootstrap_impl": {
+    "address": "0x964F4Ea287EF11E3f8D977f230afADFFB8B8cd04",
+    "tx": "0xc1215befc4a31f0ecdbab8d0f35f08fbe01b63651459f6c138b27a63d1cb90a8"
+  },
+  "identity_impl": {
+    "address": "0x48C7e9fC9B9a5B8617cEa607578740Ac580AE2f5",
+    "tx": "0xb90758692667b1c42538d87734115fc5bcc8951aa54497766c210732d67d06eb"
+  },
+  "validation_impl": {
+    "address": "0xb0F1E3F1ce07518D2eB9D1AB1086EF93C8AF9E8C",
+    "tx": "0x5ca273b581b26e998313adcb12be2e2f992b30710835501e116aef17c1d1d55a"
+  },
+  "identity": {
+    "address": "0x21bEA5e3C1f56dD83C9155704961DE25443248F3",
+    "tx": "0x251de50af4aac094c924c1639415a3fe4404d6ecbd81eba7044359ee7b439cbc"
+  },
+  "validation": {
+    "address": "0xE5422Bc3F091b6dB319D88B9F956Fc197822C416",
+    "tx": "0x551bddec1f328929279b29c884665a2e89112eab1d67d0756d24e477aaed5ad0"
+  },
+  "identity_upgraded": true,
+  "validation_upgraded": true,
+  "rerun": {
+    "address": "0x49DcD68D6Ba5788A408d9C0d2A9918C8D0DdF31B",
+    "tx": "0x9e807c15178d9561eeb29687d4c20ccc4f30b52281cba622fef42dcf86583f8c"
+  },
+  "address": "0x49DcD68D6Ba5788A408d9C0d2A9918C8D0DdF31B",
+  "tx": "0x9e807c15178d9561eeb29687d4c20ccc4f30b52281cba622fef42dcf86583f8c",
+  "deployed_at": "2026-11-07T11:04:28.073Z"
+}

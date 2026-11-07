@@ -1,0 +1,1 @@
+Validation request files for the Rerun proof. Each request on the ERC-8004 Validation Registry commits to the keccak256 of one of these files, and Rerun refuses any content that does not hash to it. The bytes matter, so these files are stored exactly, with no line ending conversion.

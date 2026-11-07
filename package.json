@@ -1,0 +1,22 @@
+{
+  "name": "rerun",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "license": "AGPL-3.0-or-later",
+  "dependencies": {
+    "ethers": "^6.17.0",
+    "genlayer-js": "2.0.0-rc.2",
+    "solc": "0.8.36",
+    "@openzeppelin/contracts": "5.4.0",
+    "@openzeppelin/contracts-upgradeable": "5.4.0"
+  },
+  "scripts": {
+    "test": "python tests/rerun_rules.py"
+  },
+  "description": "Rerun: an ERC-8004 validator that redoes the agent's work on GenLayer and writes the score to the registry itself",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/JspIIV/rerun.git"
+  }
+}
