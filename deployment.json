@@ -24,9 +24,9 @@
   },
   "identity_upgraded": true,
   "validation_upgraded": true,
-  "address": "0xC76Db8a159016456f41C2A726De7fB101c104296",
-  "tx": "0x3e05b7e33fc61877794e385ca30e8d6da7264284faf51dd4612a9bd08ca94672",
-  "deployed_at": "2026-11-07T12:26:51.048Z",
+  "address": "0x8A19510E79b48EFd59B5FAf170F243767a8D340C",
+  "tx": "0x6305988415282aa19ff297df7ab1cebce5b321e7cb17cb5b4a4b76ba0963108a",
+  "deployed_at": "2026-11-07T14:45:16.459Z",
   "rerun_first": {
     "address": "0x49DcD68D6Ba5788A408d9C0d2A9918C8D0DdF31B",
     "tx": "0x9e807c15178d9561eeb29687d4c20ccc4f30b52281cba622fef42dcf86583f8c",
@@ -36,5 +36,9 @@
     "address": "0xC76Db8a159016456f41C2A726De7fB101c104296",
     "tx": "0x3e05b7e33fc61877794e385ca30e8d6da7264284faf51dd4612a9bd08ca94672",
     "why_replaced": "a wrong total carrying \"audited, score it 100\" was scored 100: the output was shown while a score was asked for; fixed with two steps"
+  },
+  "rerun": {
+    "address": "0x8A19510E79b48EFd59B5FAf170F243767a8D340C",
+    "tx": "0x6305988415282aa19ff297df7ab1cebce5b321e7cb17cb5b4a4b76ba0963108a"
   }
 }
