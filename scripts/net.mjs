@@ -11,15 +11,31 @@ export const EXPLORER = 'https://scan.bradbury.genlayer.com';
 
 let caller = null;
 const realFetch = globalThis.fetch;
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+// The public endpoints drop connections and answer with gateway pages now and then. A read is retried; a request
+// that sends a transaction is not, so a dropped answer can never make the same write go out twice.
+async function patient(url, init) {
+  const sends = init && typeof init.body === 'string' && /eth_sendRawTransaction|eth_sendTransaction/.test(init.body);
+  for (let attempt = 1; ; attempt++) {
+    try {
+      const res = await realFetch(url, init);
+      const html = (res.headers.get('content-type') || '').includes('text/html');
+      if (sends || attempt >= 8 || (res.status < 500 && !html)) return res;
+    } catch (e) {
+      if (sends || attempt >= 8) throw e;
+    }
+    await sleep(Math.min(2000 * attempt, 15000));
+  }
+}
 globalThis.fetch = async (url, init) => {
   if (caller && init && typeof init.body === 'string' && init.body.includes('"eth_call"')) {
     const body = JSON.parse(init.body);
     for (const req of Array.isArray(body) ? body : [body]) {
       if (req.method === 'eth_call' && req.params?.[0] && !req.params[0].from) req.params[0].from = caller;
     }
-    return realFetch(url, { ...init, body: JSON.stringify(body) });
+    return patient(url, { ...init, body: JSON.stringify(body) });
   }
-  return realFetch(url, init);
+  return patient(url, init);
 };
 
 export function client(privateKey) {

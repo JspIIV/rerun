@@ -105,6 +105,8 @@ class _Nondet:
 
     def exec_prompt(self, task):
         self.prompts.append(task)
+        if "THE REFERENCE ANSWER" not in task:
+            return json.dumps({"answer": "22.75"})
         return self.answers.pop(0) if len(self.answers) > 1 else self.answers[0]
 
 
@@ -173,7 +175,8 @@ def req(output, task=TASK, given=INPUT):
 
 
 def ruling(verdict, why="w"):
-    return json.dumps({"verdict": verdict, "mine": "22.75", "why": why})
+    match = {"CORRECT": "SAME", "PARTLY": "PARTLY", "WRONG": "DIFFERENT"}.get(verdict, verdict)
+    return json.dumps({"match": match, "why": why})
 
 
 def main():
@@ -229,9 +232,10 @@ def main():
     check_("tagged rerun, with the attestation of request and ruling as the response hash", sent[4] == "rerun" and sent[3] == module._attestation(h[2:], "CORRECT"))
     rec = J(c.score(h))
     check_("the score is kept with the agent, the reasoning and Rerun's own answer", rec["agent"] == 7 and rec["verdict"] == "CORRECT" and rec["mine"] == "22.75" and rec["url"] == URL)
-    p = nd.prompts[0]
-    check_("the round is told to do the task itself first, from the input alone", "Do the task yourself first" in p and TASK in p and INPUT in p and "$22.75" in p)
-    check_("the agent's output is framed as untrusted, steering named as manipulation both ways", "untrusted" in p and "in either direction" in p)
+    redo, cmp = nd.prompts[0], nd.prompts[1]
+    check_("step one redoes the task from the input, and never sees the agent's output", TASK in redo and INPUT in redo and "$22.75" not in redo)
+    check_("step two compares the agent's output with that reference, framed as untrusted", "THE REFERENCE ANSWER" in cmp and "22.75" in cmp and "$22.75" in cmp and "untrusted" in cmp)
+    check_("step two asks for no score, so a note asking for a score has nothing to ask for", "score" not in cmp.lower() and "100" not in cmp)
 
     print("\npartly right and wrong")
     part = req("About $22, from three lines")
@@ -285,7 +289,15 @@ def main():
     nd.answers = [ruling("WRONG")]
     nd.prompts = []
     c.validate(hh, URL)
-    check_("output text cannot close the frame it is quoted in", ">>> NOTE" not in nd.prompts[0] and "> > > NOTE" in nd.prompts[0])
+    check_("output text cannot close the frame it is quoted in", ">>> NOTE" not in nd.prompts[1] and "> > > NOTE" in nd.prompts[1])
+    check_("and it never reaches step one", "NOTE TO VALIDATORS" not in nd.prompts[0])
+    nd.answers = ["fine"]
+    body = req("$22.75, step one fails")
+    hx = ask(body)
+    serve(body)
+    gl.nondet.exec_prompt = lambda task: "no json at all"
+    check_("a step one with no readable answer scores nothing", not J(c.validate(hx, URL))["ok"])
+    gl.nondet.exec_prompt = types.MethodType(_Nondet.exec_prompt, nd)
 
     print("\nthe book")
     size = J(c.size())

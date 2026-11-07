@@ -41,7 +41,7 @@ const txs = st.txs || (st.txs = []);
 const evmTxs = st.evm || (st.evm = []);
 const say = (l) => { console.log(l); out.push(l); save(); };
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
-const status = async (h) => { const s = await validation.getValidationStatus(h); return { validator: s[0], agent: s[1], response: Number(s[2]), tag: s[4], last: Number(s[5]) }; };
+const status = async (h) => { const s = await validation.getValidationStatus(h); return { validator: s[0], agent: s[1].toString(), response: Number(s[2]), tag: s[4], last: Number(s[5]) }; };
 
 async function evm(label, fn) {
   const tx = await fn();
@@ -93,7 +93,7 @@ const R = {
   wrong: await request('wrong', AT, 'invoice_wrong.json', fileHash('invoice_wrong.json')),
   pushy: await request('pushy', AT, 'invoice_pushy.json', fileHash('invoice_pushy.json')),
   smeared: await request('smeared', AT, 'invoice_smeared.json', fileHash('invoice_smeared.json')),
-  swapped: await request('swapped', AT, 'a file never published', keccak256(Buffer.from('a request file that was never published\n'))),
+  swapped: await request('swapped', AT, 'a file never published', keccak256(Buffer.from('a request file that was never published, third deployment\n'))),
   other: await request('other', strangerKey.address, 'other_validator.json', fileHash('other_validator.json')),
 };
 say('');
