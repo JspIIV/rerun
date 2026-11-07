@@ -24,11 +24,12 @@
   },
   "identity_upgraded": true,
   "validation_upgraded": true,
-  "rerun": {
-    "address": "0x49DcD68D6Ba5788A408d9C0d2A9918C8D0DdF31B",
-    "tx": "0x9e807c15178d9561eeb29687d4c20ccc4f30b52281cba622fef42dcf86583f8c"
-  },
   "address": "0x49DcD68D6Ba5788A408d9C0d2A9918C8D0DdF31B",
   "tx": "0x9e807c15178d9561eeb29687d4c20ccc4f30b52281cba622fef42dcf86583f8c",
-  "deployed_at": "2026-11-07T11:04:28.073Z"
+  "deployed_at": "2026-11-07T11:04:28.073Z",
+  "rerun_first": {
+    "address": "0x49DcD68D6Ba5788A408d9C0d2A9918C8D0DdF31B",
+    "tx": "0x9e807c15178d9561eeb29687d4c20ccc4f30b52281cba622fef42dcf86583f8c",
+    "why_replaced": "could not read getValidationStatus: GenVM ABI decoder fails on a returned tuple holding a string"
+  }
 }

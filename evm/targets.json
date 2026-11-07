@@ -1,0 +1,4 @@
+[
+  { "key": "identity", "label": "IdentityRegistry", "proxy": true, "file": "official/IdentityRegistryUpgradeable.sol", "name": "IdentityRegistryUpgradeable" },
+  { "key": "validation", "label": "ValidationRegistry", "proxy": true, "file": "official/ValidationRegistryUpgradeable.sol", "name": "ValidationRegistryUpgradeable" }
+]

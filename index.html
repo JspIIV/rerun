@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Rerun: an ERC-8004 validator that redoes the work</title>
+<link rel="icon" href="docs/logo.png" />
+<style>
+  :root{ --bg:#08090d; --card:#11141c; --line:#232837; --ink:#eef1f7; --dim:#a3acc2; --faint:#6b7590;
+    --accent:#f59e0b; --clear:#4ade80; --caution:#fbbf24; --danger:#fb7185; --unv:#94a3b8; }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.6 ui-sans-serif,system-ui,-apple-system,sans-serif}
+  a{color:var(--accent)}
+  .wrap{max-width:980px;margin:0 auto;padding:0 18px 70px}
+  header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:18px 0;border-bottom:1px solid var(--line);flex-wrap:wrap}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:20px}
+  .brand img{width:30px;height:30px;border-radius:7px}
+  .net{font:12px ui-monospace,monospace;color:var(--dim);border:1px solid var(--line);border-radius:999px;padding:5px 10px}
+  button{font:inherit;cursor:pointer;border-radius:10px;border:1px solid var(--line);background:#1a1f2c;color:var(--ink);padding:9px 14px}
+  button.primary{background:var(--accent);color:#1b1203;border-color:transparent;font-weight:700}
+  button.chip{padding:6px 10px;font-size:13px;border-radius:999px}
+  button:disabled{opacity:.5;cursor:default}
+  h1{font-size:30px;line-height:1.2;margin:28px 0 8px;letter-spacing:-.4px}
+  h2{font:13px ui-monospace,monospace;color:var(--dim);letter-spacing:1px;text-transform:uppercase;margin:30px 0 8px}
+  .lead{color:var(--dim);max-width:760px}
+  section{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin:14px 0}
+  label{display:block;font:12px ui-monospace,monospace;color:var(--dim);letter-spacing:1px;text-transform:uppercase;margin:10px 0 5px}
+  input,select{width:100%;background:#0b0e15;border:1px solid var(--line);color:var(--ink);border-radius:9px;padding:10px 11px;font:inherit}
+  .grid{display:grid;grid-template-columns:180px 1fr;gap:10px}
+  @media (max-width:640px){ .grid{grid-template-columns:1fr} h1{font-size:24px} }
+  .actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:12px}
+  .muted{color:var(--faint);font-size:13px}
+  .status{margin-top:10px;color:var(--dim);font-size:14px;min-height:18px}
+  .three{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+  @media (max-width:760px){ .three{grid-template-columns:1fr} }
+  .step b{display:block;color:var(--ink);margin-bottom:4px}
+  .step{color:var(--dim);font-size:14px;border:1px solid var(--line);border-radius:12px;padding:14px;background:#0d1018}
+  .verdict{display:inline-block;font:700 14px ui-monospace,monospace;padding:6px 12px;border-radius:999px}
+  .v-CLEAR{background:#10261a;color:var(--clear)} .v-CAUTION{background:#2a2110;color:var(--caution)}
+  .v-DANGER{background:#2c1218;color:var(--danger)} .v-UNVERIFIED,.v-UNREVIEWED,.v-INCOMPLETE{background:#1b2030;color:var(--unv)}
+  .row{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .kv{display:grid;grid-template-columns:150px 1fr;gap:6px 12px;font-size:14px;margin-top:12px}
+  .kv div:nth-child(odd){color:var(--faint);font:12px ui-monospace,monospace;text-transform:uppercase;letter-spacing:.5px;padding-top:2px}
+  .mono{font-family:ui-monospace,monospace;font-size:13px;word-break:break-all}
+  .flags{display:flex;gap:6px;flex-wrap:wrap}
+  .flag{font-size:12px;border:1px solid var(--line);border-radius:999px;padding:3px 9px;color:var(--dim)}
+  .why{border-left:3px solid var(--line);padding-left:10px;color:var(--dim);margin-top:10px}
+  .gate{font:700 13px ui-monospace,monospace;padding:4px 10px;border-radius:8px}
+  .gate.yes{background:#10261a;color:var(--clear)} .gate.no{background:#2c1218;color:var(--danger)}
+  .evidence li{margin:4px 0}
+  .log{margin-top:10px;font-size:13px}
+  .log div{border-top:1px solid var(--line);padding:6px 0;color:var(--dim)}
+  table{width:100%;border-collapse:collapse;font-size:14px}
+  td,th{text-align:left;padding:8px 6px;border-top:1px solid var(--line)} th{color:var(--faint);font:12px ui-monospace,monospace;text-transform:uppercase}
+  pre{background:#0b0e15;border:1px solid var(--line);border-radius:10px;padding:12px;overflow:auto;font-size:13px;color:#cdd3e1}
+  footer{color:var(--faint);font-size:13px;border-top:1px solid var(--line);padding-top:18px;margin-top:34px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand"><img src="docs/logo.png" alt="" />Rerun</div>
+    <div class="row"><span class="net">GenLayer Bradbury</span><button id="connect">Connect wallet</button></div>
+  </header>
+  <div id="wstatus" class="muted" style="margin-top:8px"></div>
+
+  <h1>An agent says it did the work. Rerun does it again.</h1>
+  <p class="lead">ERC-8004 gives every agent an identity and a <b>Validation Registry</b>: the agent names a validator,
+    and the validator writes a score from 0 to 100 that any app or contract can read. The standard suggests
+    "stake-secured inference re-execution" as one kind of validator. That is a GenLayer round. Rerun's validators
+    redo the agent's task from its input, compare, and <b>Rerun itself</b> writes the score to the official registry.</p>
+
+  <div class="three">
+    <div class="step"><b>1. The official registries</b>The ERC-8004 team's own IdentityRegistry and ValidationRegistry, unmodified, on GenLayer Chain. The agent names Rerun as its validator.</div>
+    <div class="step"><b>2. The file must be the request</b>The agent commits the keccak256 of its request file. Rerun refuses any content that does not hash to it, with no model asked.</div>
+    <div class="step"><b>3. Redo, compare, write</b>Each validator does the task itself, then rules CORRECT 100, PARTLY 50 or WRONG 0. Only Rerun can write that score, and only once.</div>
+  </div>
+
+  <h2>Try it with one wallet</h2>
+  <section>
+    <p class="muted" style="margin-top:0">You will own an agent and ask Rerun to check its work. Each step is one wallet transaction on GenLayer Chain.</p>
+    <div class="actions"><button id="register">1. Register an agent</button><span class="muted" id="agentInfo"></span></div>
+    <div class="grid">
+      <div><label>Agent id</label><input id="aid" placeholder="from step 1" spellcheck="false" /></div>
+      <div><label>2. The request file's url</label><input id="rurl" spellcheck="false" placeholder="https://..." /></div>
+    </div>
+    <div class="actions" id="samples"><span class="muted">Sample work:</span></div>
+    <div class="actions">
+      <button id="request">Ask the registry for validation by Rerun</button>
+      <button class="primary" id="validate">3. Ask Rerun to score it</button>
+    </div>
+    <div class="grid"><div><label>Request hash</label><input id="rhash" spellcheck="false" placeholder="filled in by step 2" /></div></div>
+    <div class="actions"><button id="lookup">Look up the request</button></div>
+    <div class="status" id="status"></div>
+  </section>
+
+  <section id="result" style="display:none"></section>
+
+  <h2>Scores Rerun has written</h2>
+  <section id="board"><div class="muted">Reading from chain...</div></section>
+
+  <h2>For apps and contracts</h2>
+  <section>
+<pre>// any contract on GenLayer Chain: the agent's average under Rerun, from the official registry
+(uint64 count, uint8 avg) = validationRegistry.getSummary(agentId, [RERUN], "rerun");</pre>
+  </section>
+
+  <footer>
+    Rerun <a id="exp" target="_blank" rel="noopener">on the Bradbury explorer</a> &middot;
+    <a href="https://github.com/JspIIV/rerun" target="_blank" rel="noopener">source and proof</a> &middot;
+    registries from <a href="https://github.com/erc-8004/erc-8004-contracts" target="_blank" rel="noopener">erc-8004/erc-8004-contracts</a>,
+    following <a href="https://eips.ethereum.org/EIPS/eip-8004" target="_blank" rel="noopener">ERC-8004</a>.
+  </footer>
+</div>
+
+<script type="module">
+import { createClient } from "https://esm.sh/genlayer-js@2.0.0-rc.2";
+import { testnetBradbury } from "https://esm.sh/genlayer-js@2.0.0-rc.2/chains";
+import { BrowserProvider, JsonRpcProvider, Contract, AbiCoder, keccak256 } from "https://esm.sh/ethers@6.13.4";
+
+const RERUN = "0x49DcD68D6Ba5788A408d9C0d2A9918C8D0DdF31B";
+const IDENTITY = "0x21bEA5e3C1f56dD83C9155704961DE25443248F3";
+const VALIDATION = "0xE5422Bc3F091b6dB319D88B9F956Fc197822C416";
+const RPC = "https://rpc-bradbury.genlayer.com";
+const CHAIN_RPC = "https://rpc.testnet-chain.genlayer.com";
+const EXPLORER = "https://scan.bradbury.genlayer.com";
+const RAW = "https://raw.githubusercontent.com/JspIIV/rerun/master/docs/";
+const SAMPLES = [["invoice_right.json", "Invoice total, right"], ["invoice_wrong.json", "Invoice total, off by a dollar"],
+  ["invoice_pushy.json", "Wrong total that says score it 100"], ["temperature_right.json", "Temperature, right"]];
+const CHAIN_ID_HEX = "0x107d";
+const CHAIN_PARAMS = { chainId: CHAIN_ID_HEX, chainName: "GenLayer Bradbury",
+  nativeCurrency: { name: "GEN", symbol: "GEN", decimals: 18 }, rpcUrls: [CHAIN_RPC], blockExplorerUrls: [EXPLORER] };
+const ID_ABI = ["function register(string agentURI) returns (uint256)", "event Registered(uint256 indexed agentId, string agentURI, address indexed owner)"];
+const VAL_ABI = ["function validationRequest(address validatorAddress, uint256 agentId, string requestURI, bytes32 requestHash)",
+  "function getValidationStatus(bytes32 requestHash) view returns (address validatorAddress, uint256 agentId, uint8 response, bytes32 responseHash, string tag, uint256 lastUpdate)",
+  "function getSummary(uint256 agentId, address[] validatorAddresses, string tag) view returns (uint64 count, uint8 averageResponse)"];
+
+const valRead = new Contract(VALIDATION, VAL_ABI, new JsonRpcProvider(CHAIN_RPC, 4221));
+const reader = createClient({ chain: testnetBradbury, endpoint: RPC });
+let account = null, eip1193 = null;
+// The SDK quotes fees with an eth_call that has a gas price and no sender, which the node refuses from
+// the zero address. The connected account is filled in as the sender; the call's result does not change.
+const realFetch = window.fetch.bind(window);
+window.fetch = async (input, init) => {
+  if (account && init && typeof init.body === "string" && init.body.includes('"eth_call"')) {
+    const body = JSON.parse(init.body);
+    for (const req of Array.isArray(body) ? body : [body]) {
+      if (req.method === "eth_call" && req.params?.[0] && !req.params[0].from) req.params[0].from = account;
+    }
+    return realFetch(input, { ...init, body: JSON.stringify(body) });
+  }
+  return realFetch(input, init);
+};
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const short = (a) => (a ? `${String(a).slice(0, 6)}...${String(a).slice(-4)}` : "");
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+const say = (t) => { $("status").textContent = t; };
+const errText = (e) => e?.code === 4001 || e?.code === "ACTION_REJECTED" ? "Rejected in the wallet." : (e?.shortMessage || e?.reason || e?.message || String(e));
+$("exp").href = EXPLORER + "/address/" + RERUN;
+
+function pickProvider() {
+  const e = window.ethereum; if (!e) return null;
+  if (Array.isArray(e.providers) && e.providers.length) return e.providers.find((p) => p.isMetaMask) || e.providers[0];
+  return e;
+}
+async function ensureWallet() {
+  eip1193 = pickProvider();
+  if (!eip1193) throw new Error("No wallet found. Reading needs none; to act, open this page in a browser with MetaMask.");
+  if (!account) { const a = await eip1193.request({ method: "eth_requestAccounts" }); account = a && a[0]; $("connect").textContent = short(account); }
+  const cur = await eip1193.request({ method: "eth_chainId" });
+  if (String(cur).toLowerCase() !== CHAIN_ID_HEX) {
+    try { await eip1193.request({ method: "wallet_switchEthereumChain", params: [{ chainId: CHAIN_ID_HEX }] }); }
+    catch (err) { if (err && (err.code === 4902 || err.code === -32603)) await eip1193.request({ method: "wallet_addEthereumChain", params: [CHAIN_PARAMS] }); else throw err; }
+  }
+  const signer = await new BrowserProvider(eip1193).getSigner();
+  return { identity: new Contract(IDENTITY, ID_ABI, signer), validation: new Contract(VALIDATION, VAL_ABI, signer) };
+}
+$("connect").onclick = async () => {
+  try { await ensureWallet(); $("wstatus").textContent = "Connected " + short(account) + " on GenLayer Bradbury."; }
+  catch (e) { $("wstatus").textContent = errText(e); }
+};
+$("register").onclick = async () => {
+  try {
+    const { identity } = await ensureWallet();
+    say("Approve the agent registration in your wallet...");
+    const rc = await (await identity.register("https://jspiiv.github.io/rerun/#demo-agent")).wait();
+    const log = rc.logs.map((l) => { try { return identity.interface.parseLog(l); } catch { return null; } }).find((l) => l && l.name === "Registered");
+    $("aid").value = log.args.agentId.toString();
+    $("agentInfo").textContent = "Agent #" + $("aid").value + " is yours, on the official IdentityRegistry.";
+    say("Now pick sample work and ask the registry for validation by Rerun.");
+  } catch (e) { say(errText(e)); }
+};
+$("request").onclick = async () => {
+  try {
+    const { validation } = await ensureWallet();
+    const url = $("rurl").value.trim(), agent = $("aid").value.trim();
+    const res = await fetch(url, { cache: "no-store" });
+    if (!res.ok) throw new Error("Could not fetch the request file: " + res.status);
+    const h = keccak256(new Uint8Array(await res.arrayBuffer()));
+    say(`Approve the validation request ${h.slice(0, 12)}... naming Rerun...`);
+    await (await validation.validationRequest(RERUN, agent, url, h)).wait();
+    $("rhash").value = h;
+    say("The request is on the registry. Now ask Rerun to score it.");
+  } catch (e) { say(errText(e)); }
+};
+$("validate").onclick = async () => {
+  const h = $("rhash").value.trim(), url = $("rurl").value.trim();
+  if (!/^0x[0-9a-fA-F]{64}$/.test(h) || !/^https?:\/\//.test(url)) { say("Enter the request hash and the request file's url."); return; }
+  try {
+    await ensureWallet();
+    const c = createClient({ chain: testnetBradbury, endpoint: RPC, account, provider: eip1193 });
+    const gasLimit = 300000n, maxGasPrice = 1000000000n, budget = gasLimit * maxGasPrice;
+    const feeParams = AbiCoder.defaultAbiCoder().encode(["uint256", "uint256"], [gasLimit, maxGasPrice]);
+    // The score is a call Rerun sends to the registry; this budget pays for that call on GenLayer Chain.
+    const messageAllocations = [{ messageType: 0, onAcceptance: false, recipient: VALIDATION, budget, feeParams }];
+    const quote = await c.estimateTransactionFees({ totalMessageFees: budget, messageAllocations });
+    say("Approve the scoring request in your wallet...");
+    const hash = await c.writeContract({ address: RERUN, functionName: "validate", args: [h, url], value: 0n,
+      fees: { distribution: quote.distribution, feeValue: quote.feeValue, messageAllocations } });
+    const link = (text) => { const a = document.createElement("a"); a.href = EXPLORER + "/tx/" + hash; a.target = "_blank"; a.rel = "noopener"; a.textContent = "transaction"; $("status").textContent = text + " "; $("status").appendChild(a); };
+    for (let i = 0; i < 300; i++) {
+      await sleep(6000);
+      let tx = null; try { tx = await reader.getTransaction({ hash }); } catch {}
+      const name = String(tx?.statusName || "");
+      if (name === "FINALIZED") {
+        const s = JSON.parse(await reader.readContract({ address: RERUN, functionName: "score", args: [h] }));
+        if (s.scored === false) { link("Final, and nothing was scored: the file may not hash to the request, or it names another validator."); return; }
+        for (let k = 0; k < 20; k++) {
+          const st = await valRead.getValidationStatus(h);
+          if (st.tag === "rerun") { link(`Final: Rerun ruled ${s.verdict}, and the registry now holds ${st.response}.`); lookup(); loadBoard(); return; }
+          link(`Final: Rerun ruled ${s.verdict}. Waiting for its call to land on the registry...`); await sleep(5000);
+        }
+        link(`Final: Rerun ruled ${s.verdict}. Its call has not landed yet; anyone can resend it.`); return;
+      }
+      if (["UNDETERMINED", "CANCELED", "LEADER_TIMEOUT", "VALIDATORS_TIMEOUT"].includes(name)) { link(`The round ended ${name} and changed nothing.`); return; }
+      link(name === "ACCEPTED" ? "Accepted by the validators. Rerun writes only once the score is final..." : `The validators are redoing the work... ${(i + 1) * 6}s, ${name || "waiting for the network"}.`);
+    }
+  } catch (e) { say(errText(e)); }
+};
+async function lookup() {
+  const h = $("rhash").value.trim();
+  if (!/^0x[0-9a-fA-F]{64}$/.test(h)) { say("Enter a request hash."); return; }
+  try {
+    const [st, s] = await Promise.all([valRead.getValidationStatus(h), reader.readContract({ address: RERUN, functionName: "score", args: [h] }).then(JSON.parse)]);
+    const sum = await valRead.getSummary(st.agentId, [RERUN], "rerun");
+    const cls = s.scored === false ? "UNREVIEWED" : { CORRECT: "CLEAR", PARTLY: "CAUTION", WRONG: "DANGER" }[s.verdict];
+    const box = $("result"); box.style.display = "block";
+    box.innerHTML = `<div class="row"><span class="verdict v-${cls}">${s.scored === false ? "NOT SCORED" : esc(s.verdict)}</span><span class="gate ${st.tag === "rerun" ? "yes" : "no"}">registry: ${st.tag === "rerun" ? esc(st.response) + " / 100" : "no response"}</span></div>
+      ${s.why ? `<div class="why">${esc(s.why)}</div>` : ""}
+      <div class="kv">
+        <div>Agent</div><div>#${esc(st.agentId)} <span class="muted">(average under Rerun: ${esc(sum.averageResponse)} over ${esc(sum.count)})</span></div>
+        <div>Validator named</div><div class="mono">${esc(st.validatorAddress)}${st.validatorAddress.toLowerCase() === RERUN.toLowerCase() ? ' <span class="muted">(Rerun)</span>' : ""}</div>
+        ${s.mine ? `<div>Rerun's own answer</div><div>${esc(s.mine)}</div>` : ""}
+        ${s.url ? `<div>Request file</div><div class="mono"><a href="${esc(s.url)}" target="_blank" rel="noopener">${esc(s.url)}</a></div>` : ""}
+        ${s.attestation ? `<div>Response hash</div><div class="mono">0x${esc(s.attestation)}</div>` : ""}
+      </div>`;
+  } catch (e) { say("Could not read: " + errText(e)); }
+}
+$("lookup").onclick = lookup;
+for (const [file, label] of SAMPLES) {
+  const b = document.createElement("button"); b.className = "chip"; b.textContent = label;
+  b.onclick = () => { $("rurl").value = RAW + file; };
+  $("samples").appendChild(b);
+}
+async function loadBoard() {
+  try {
+    const data = JSON.parse(await reader.readContract({ address: RERUN, functionName: "page", args: [0n, 20n] }));
+    if (!data.items.length) { $("board").innerHTML = '<div class="muted">No scores yet.</div>'; return; }
+    $("board").innerHTML = `<table><thead><tr><th>Request</th><th>Agent</th><th>Score</th><th>Why</th></tr></thead><tbody>${data.items.map((r) =>
+      `<tr><td><a href="#" class="pick mono" data-h="${esc(r.request)}">${esc(r.request.slice(0, 12))}...</a></td><td>#${esc(r.agent)}</td><td>${esc(r.verdict)} ${esc(r.score)}</td><td class="muted">${esc(String(r.why).slice(0, 110))}</td></tr>`).join("")}</tbody></table>`;
+    document.querySelectorAll(".pick").forEach((a) => a.onclick = (ev) => { ev.preventDefault(); $("rhash").value = a.dataset.h; lookup(); window.scrollTo({ top: 0, behavior: "smooth" }); });
+  } catch (e) { $("board").innerHTML = `<div class="muted">Could not read the board: ${esc(e?.message || e)}</div>`; }
+}
+loadBoard();
+</script>
+</body>
+</html>

@@ -1,4 +1,5 @@
 {
+  "request": "rerun proof, second deployment",
   "task": "Convert 72 degrees Fahrenheit to Celsius, rounded to one decimal place.",
   "input": "72 F",
   "output": "22.2 C"

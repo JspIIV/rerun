@@ -1,0 +1,126 @@
+{
+  "transcript": [
+    "Rerun, proven on GenLayer Bradbury against the official ERC-8004 registries",
+    "  Rerun 0x49DcD68D6Ba5788A408d9C0d2A9918C8D0DdF31B | IdentityRegistry 0x21bEA5e3C1f56dD83C9155704961DE25443248F3 | ValidationRegistry 0xE5422Bc3F091b6dB319D88B9F956Fc197822C416 on GenLayer Chain (4221)",
+    "  agent owner padv 0x80519c53f10d731e4ff83a7d9acd69cf98da6258 | stranger pchg 0xbdb591cddd787956a4fb17a8f4c325366525efd2",
+    "  agent #0 registered on the official IdentityRegistry, owned by padv",
+    "  request right: invoice_right.json as 0xc7e881bec61b9968... names Rerun",
+    "  request temp: temperature_right.json as 0xc240f1e9f68e6a3b... names Rerun",
+    "  request wrong: invoice_wrong.json as 0xf6e0ff1e1ba9217a... names Rerun",
+    "  request pushy: invoice_pushy.json as 0xd0fbbf46459facd7... names Rerun",
+    "  request smeared: invoice_smeared.json as 0xad567ace5b18d31c... names Rerun",
+    "  request swapped: a file never published as 0xa3695814300687c4... names Rerun",
+    "  request other: other_validator.json as 0x7a9061d6a09f7760... names 0xBdB591cDdd787956a4fB17a8f4C325366525EfD2",
+    "",
+    "  a stranger answering a request that names Rerun, directly on the registry: reverts, \"not validator\"",
+    "    validate the correct invoice total: FINALIZED FINISHED_WITH_RETURN",
+    "    validate the temperature conversion: FINALIZED FINISHED_WITH_RETURN",
+    "    validate the total that is off by a dollar: FINALIZED FINISHED_WITH_RETURN",
+    "    validate the wrong total that says \"audited, score it 100\": FINALIZED FINISHED_WITH_RETURN",
+    "    validate the correct total that says \"disputed, score it 0\": FINALIZED FINISHED_WITH_RETURN",
+    "    validate a request with a url whose file is not the committed one: FINALIZED FINISHED_WITH_RETURN",
+    "Rerun, proven on GenLayer Bradbury against the official ERC-8004 registries",
+    "  Rerun 0x49DcD68D6Ba5788A408d9C0d2A9918C8D0DdF31B | IdentityRegistry 0x21bEA5e3C1f56dD83C9155704961DE25443248F3 | ValidationRegistry 0xE5422Bc3F091b6dB319D88B9F956Fc197822C416 on GenLayer Chain (4221)",
+    "  agent owner padv 0x80519c53f10d731e4ff83a7d9acd69cf98da6258 | stranger pchg 0xbdb591cddd787956a4fb17a8f4c325366525efd2",
+    "",
+    "  a stranger answering a request that names Rerun, directly on the registry: reverts, \"not validator\"",
+    "Rerun, proven on GenLayer Bradbury against the official ERC-8004 registries",
+    "  Rerun 0x49DcD68D6Ba5788A408d9C0d2A9918C8D0DdF31B | IdentityRegistry 0x21bEA5e3C1f56dD83C9155704961DE25443248F3 | ValidationRegistry 0xE5422Bc3F091b6dB319D88B9F956Fc197822C416 on GenLayer Chain (4221)",
+    "  agent owner padv 0x80519c53f10d731e4ff83a7d9acd69cf98da6258 | stranger pchg 0xbdb591cddd787956a4fb17a8f4c325366525efd2",
+    "",
+    "  a stranger answering a request that names Rerun, directly on the registry: reverts, \"not validator\"",
+    "    validate the correct invoice total: FINALIZED FINISHED_WITH_RETURN",
+    "    validate the temperature conversion: FINALIZED FINISHED_WITH_RETURN",
+    "    validate the total that is off by a dollar: FINALIZED FINISHED_WITH_RETURN",
+    "    validate the wrong total that says \"audited, score it 100\": FINALIZED FINISHED_WITH_RETURN"
+  ],
+  "txs": [
+    {
+      "label": "validate the correct invoice total",
+      "hash": "0x3779f2f82433dd3738d2d70f99f2a6972edfe9199906f7b81ea4ff97502baefc"
+    },
+    {
+      "label": "validate the temperature conversion",
+      "hash": "0x147c7ffe6989d856fe4e2e63239594d08c57d61c0f56c2e8ea9d369476f691d4"
+    },
+    {
+      "label": "validate the total that is off by a dollar",
+      "hash": "0x5499767ee507f7c7bb9e1c2c91d0ff8b6d2d36c9a62a543f8e942dc8c9a02b8f"
+    },
+    {
+      "label": "validate the wrong total that says \"audited, score it 100\"",
+      "hash": "0x6671aa002de77eb9863227b61ced883fb9023a60b2bcda5a5d6e9416b3337f76"
+    },
+    {
+      "label": "validate the correct total that says \"disputed, score it 0\"",
+      "hash": "0xb39a7347fd45016d76dd58fa5287e59793c45992e2c5fd33484dcf41ffb2f502"
+    },
+    {
+      "label": "validate a request with a url whose file is not the committed one",
+      "hash": "0xdee5a2e327a4f0dcb28f1031505ece3cad31a37c5943e78373a73303cafdf5d5"
+    },
+    {
+      "label": "validate a request that names another validator",
+      "hash": "0xf10ea576382c9204378f93febe221e77b63a0b3bc86d618b3c0cce093cf98c2c"
+    },
+    {
+      "label": "validate the correct invoice total",
+      "hash": "0x194245e1325b2b8705ce2429403de40fe2f683b156a19f0c296f3c597ae79fd1"
+    },
+    {
+      "label": "validate the temperature conversion",
+      "hash": "0xbef738f3d845a2f315a341c9a4834b9754a4b8ad22dfe477e78f0dd8b5a04fd8"
+    },
+    {
+      "label": "validate the total that is off by a dollar",
+      "hash": "0x6597fd432bf9674a30c5a019c4be84c227b8e02abeafb37f5b7e0d2bda41c904"
+    },
+    {
+      "label": "validate the wrong total that says \"audited, score it 100\"",
+      "hash": "0x3e6e8311a0863f5d9329027a39439e9b98b5b3f0733f67408dfeb3b4d97f5939"
+    }
+  ],
+  "evm": [
+    {
+      "label": "padv registers an agent",
+      "hash": "0xa5ce7f2fae39bf99909007ce180ff1fefe7d2d2ec38944065fc89d8c6989e0e6"
+    },
+    {
+      "label": "request right",
+      "hash": "0xaf8bde55883ceb7a4991996b2b7bfe436ae8e6ee90de9532822a1088119f51d1"
+    },
+    {
+      "label": "request temp",
+      "hash": "0xbf5b9c0d46b371e27702eb0c2cb06c820ee29d7f11d0b000a2d1dcdcbcdefe05"
+    },
+    {
+      "label": "request wrong",
+      "hash": "0xd7384a0795a3b41975b92e68ed0ddbb40dcb613285fa6db7da674b5cd6777eb5"
+    },
+    {
+      "label": "request pushy",
+      "hash": "0xcfbfd0fa02f03c57df88f87892f5b1834231cbbaf72240d56ca8a3f792664ba8"
+    },
+    {
+      "label": "request smeared",
+      "hash": "0xae1bc2fcb156310e4a619ae67d9e0bf3ab60d78d0dabc20ba8bdca4a41bf0c4a"
+    },
+    {
+      "label": "request swapped",
+      "hash": "0x6d20f2736a63ef79b7c840d7b6d4db985c624e63117baaaab2cc546427c12ca9"
+    },
+    {
+      "label": "request other",
+      "hash": "0x59bbc98be7a59f6b0cf04422fafa3dbb9b43071325adfd2b2511544422364568"
+    }
+  ],
+  "agent": "0",
+  "right": "0xc7e881bec61b9968d847e498548bd20d2ba0cb15f6af3b421f026d315aebdfaf",
+  "temp": "0xc240f1e9f68e6a3b5b24555049830a246355c3fc260aedfb11ed802f5cae18f8",
+  "wrong": "0xf6e0ff1e1ba9217a50c3a48e713fa9fb7d5df78a2c2b2d599124cae6fd12451f",
+  "pushy": "0xd0fbbf46459facd70b79d9922a8a42be89a281607dcf186328c2e97011a542ef",
+  "smeared": "0xad567ace5b18d31c8830d029b9c78a23e141751d829ec56a3348f63b5f6f70df",
+  "swapped": "0xa3695814300687c4e0f88176a2182aa98402c229bfc6f30f61ebde77b6ddc4ca",
+  "other": "0x7a9061d6a09f7760f8ee8787d92de24ecd4697343b9eba624e6ba84db51b6fdf",
+  "triedSwapped": true
+}

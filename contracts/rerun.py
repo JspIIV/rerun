@@ -67,7 +67,10 @@ def _hex32(value: str) -> str:
 @gl.evm.contract_interface
 class Registry:
     class View:
-        def getValidationStatus(self, request_hash: gl.evm.bytes32, /) -> tuple[gl.Address, gl.u256, gl.u8, gl.evm.bytes32, str, gl.u256]: ...
+        # The registry returns (validator, agentId, response, responseHash, tag, lastUpdate). GenVM's ABI decoder
+        # cannot yet decode a returned tuple holding a string (DecodingError on the offset), so only the static head
+        # is declared. Those four words sit first in the encoding whatever follows them, and they are all Rerun reads.
+        def getValidationStatus(self, request_hash: gl.evm.bytes32, /) -> tuple[gl.Address, gl.u256, gl.u8, gl.evm.bytes32]: ...
 
     class Write:
         def validationResponse(self, request_hash: gl.evm.bytes32, response: gl.u8, response_uri: str, response_hash: gl.evm.bytes32, tag: str, /) -> None: ...
