@@ -104,6 +104,10 @@ and the call each sends, step one never seeing the output, step two never asking
   ERC-8004 deployments on other chains would need a bridge to hear Rerun.
 - The one sentence of reasoning and Rerun's own answer shown with a score are the leading validator's words; the score
   is what the round agreed.
+- The registries are upgradeable, as the 8004 team ships them, and the owner set by `Bootstrap` here is our test deployer
+  `0xBdB591cDdd787956a4fB17a8f4C325366525EfD2`. That owner could upgrade the registries; it cannot answer for Rerun
+  without an upgrade. `node scripts/verify_evm.mjs` shows the implementation each proxy points at today and that it is
+  the unmodified official code. A production deployment would hand ownership to a timelock or renounce it.
 
 ## Licence
 
