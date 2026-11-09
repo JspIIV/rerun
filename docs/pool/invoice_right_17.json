@@ -1,0 +1,6 @@
+{
+  "request": "rerun demo request invoice_right 17",
+  "task": "Add up the invoice lines and give the total in dollars.",
+  "input": "widget 12.50; gadget 7.25; cable 3.00; adapter 9.99",
+  "output": "$32.74"
+}

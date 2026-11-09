@@ -125,8 +125,11 @@ const RPC = "https://rpc-bradbury.genlayer.com";
 const CHAIN_RPC = "https://rpc.testnet-chain.genlayer.com";
 const EXPLORER = "https://scan.bradbury.genlayer.com";
 const RAW = "https://raw.githubusercontent.com/JspIIV/rerun/master/docs/";
-const SAMPLES = [["invoice_right.json", "Invoice total, right"], ["invoice_wrong.json", "Invoice total, off by a dollar"],
-  ["invoice_pushy.json", "Wrong total that says score it 100"], ["temperature_right.json", "Temperature, right"]];
+// The registry takes each request hash once, so every sample has a pool of files that differ only in a request
+// label. The page picks the first one nobody has filed yet.
+const SAMPLES = [["invoice_right", "Invoice total, right"], ["invoice_wrong", "Invoice total, off by a dollar"],
+  ["invoice_pushy", "Wrong total that says score it 100"], ["temperature_right", "Temperature, right"]];
+const POOL = 30;
 const CHAIN_ID_HEX = "0x107d";
 const CHAIN_PARAMS = { chainId: CHAIN_ID_HEX, chainName: "GenLayer Bradbury",
   nativeCurrency: { name: "GEN", symbol: "GEN", decimals: 18 }, rpcUrls: [CHAIN_RPC], blockExplorerUrls: [EXPLORER] };
@@ -260,7 +263,19 @@ async function lookup() {
 $("lookup").onclick = lookup;
 for (const [file, label] of SAMPLES) {
   const b = document.createElement("button"); b.className = "chip"; b.textContent = label;
-  b.onclick = () => { $("rurl").value = RAW + file; };
+  b.onclick = async () => {
+    say("Finding a sample request file nobody has filed yet...");
+    for (let i = 1; i <= POOL; i++) {
+      const url = RAW + "pool/" + file + "_" + String(i).padStart(2, "0") + ".json";
+      try {
+        const res = await fetch(url, { cache: "no-store" });
+        if (!res.ok) continue;
+        const h = keccak256(new Uint8Array(await res.arrayBuffer()));
+        try { await valRead.getValidationStatus(h); continue; } catch { $("rurl").value = url; say("Sample ready: " + url.split("/").pop() + ". Now ask the registry for validation by Rerun."); return; }
+      } catch {}
+    }
+    say("Every sample file of this kind has been filed already. Ask us to add more.");
+  };
   $("samples").appendChild(b);
 }
 async function loadBoard() {
